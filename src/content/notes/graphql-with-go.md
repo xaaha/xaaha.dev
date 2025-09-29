@@ -77,7 +77,12 @@ This is where we write the logic to connect API to the database.
       - Add database connection (`*sql.DB`) to the `Resolver` struct in `graph/resolver.go`.
       - In the `cmd/server/main.go`, open the database connection **once**.
       - Inject this connection when you create the resolver instance: `resolver := &graph.Resolver{DB: db}`.
-2.  **Write Resolver Logic:** Open `graph/schema.resolvers.go` and implement the generated functions.
+
+2. **Define Schema:**
+      - Define your schema in `graph/schema.graphqls`.
+      - Then run generate command to generate the code for the schema 
+
+3.  **Write Resolver Logic:** Open `graph/schema.resolvers.go` and implement the generated functions. This is the main file where we write our implementation
       - Use the injected `r.Resolver.DB` to access the database.
       - **Always** use parameterized queries (`?`) to prevent SQL injection.
       - Use `db.QueryContext(ctx, ...)` to support request cancellation.
