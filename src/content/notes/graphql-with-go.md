@@ -1,18 +1,20 @@
 ---
 title: Creating GraphQl in Go
-date: 2025-09-12
+date: 2025-10-03
 description: Creating a schema first graphql api in go with sqlite3 db
-draft: true
+draft: false 
 category: Go GraphQl
 ---
 
-Note: Creating a GraphQL Server in Go with SQLite3
+This note is a high-level personal reminder for key steps to build a GraphQL API in Go with a SQLite database. The goal was to take scraped JSON data, migrate it to a database, and expose it through a GraphQL API using a schema-first approach with gqlgen.
 
-This note summarizes the key steps for building a GraphQL API, address-api, in Go with a SQLite database. The goal was to take scraped JSON data, migrate it to a database, and expose it through a GraphQL API using a schema-first approach with gqlgen.
+Repo with all the code: [address-api](https://github.com/xaaha/address-api) 
+
 1. Initial Project Structure 🏗️
 
 Organize the repo however, but I went with a typical enterprise structure because I wanted to understand this structure better. For this small project, all the code could have been in just a couple of files.
 
+```bash
 ├── cmd               # Main application entry points
 │   ├── server        # For the long-running API server
 │   └── setup         # For one-time setup scripts (like DB migration)
@@ -21,105 +23,74 @@ Organize the repo however, but I went with a typical enterprise structure becaus
 ├── internal          # Private application logic
 │   └── repository    # Data access layer
 └── graph             # GraphQL generated code and resolvers
+```
+
 
 2. Database Migration 🚚
 
 Move data from its source (e.g., JSON files) into your database.
+- Create a Schema: Define your table structure in an .sql file (e.g., db/migrations/001_create_tables.sql).
+- Write a Go Script: Create a one-time script (cmd/setup/main.go) that reads the source data, connects to the SQLite DB, creates the tables, and runs INSERT statements to populate it.
+- Run the Migration: Execute the script before starting your server: go run ./cmd/setup.
 
-    Create a Schema: Define your table structure in an .sql file (e.g., db/migrations/001_create_tables.sql).
-
-    Write a Go Script: Create a one-time script (cmd/setup/main.go) that reads the source data, connects to the SQLite DB, creates the tables, and runs INSERT statements to populate it.
-
-    Run the Migration: Execute the script before starting your server: go run ./cmd/setup.
-
-    [!Note]
-    The address-api repo also has a one-time script file, internal/data/cleanup.go, that cleans up each JSON file. I ran it once, hence it does not have tests associated with it.
+> [!Note]
+> The address-api repo also has a one-time script file, internal/data/cleanup.go, that cleans up each JSON file. I ran it once, hence it does not have tests associated with it.
+> Also, `keygen.go` is a file that generates random 32byte API key.
 
 3. GraphQL Schema-First Design 📝
 
 Define your API contract first, then generate the Go boilerplate.
 
-    Initialize gqlgen:
+- Initialize gqlgen:
 
-    `go run [github.com/99designs/gqlgen](https://github.com/99designs/gqlgen) init`
+```bash
+go run [github.com/99designs/gqlgen](https://github.com/99designs/gqlgen) init
+```
 
-    Define Your Schema: Edit graph/schema.graphqls to define your types, querys, and directives. Use camelCase for field names.
+- Define Your Schema: Edit `graph/schema.graphqls` to define your types, querys, and directives. Use camelCase for field names.
+-  Generate Go Code: Run the generate command to create Go models and resolver stubs.
 
-    Generate Go Code: Run the generate command to create Go models and resolver stubs.
+```bash
+ go run [github.com/99designs/gqlgen](https://github.com/99designs/gqlgen) generate
+```
 
-    go run [github.com/99designs/gqlgen](https://github.com/99designs/gqlgen) generate
-
-    [!Tip]
-    Define the generate command in a Makefile. When you add a mutation or query in the future, you can simply run make generate.
+> [!Tip]
+> Define the generate command in a Makefile. When you add a mutation or query in the future, you can simply run make generate.
 
 4. Refactor to the Repository Pattern 🏛️
 
 To keep the code clean and testable, we separate the database logic (the "Chef") from the API logic (the "Waiter").
 
-    Define an Interface: In the internal/repository package, create an interface that defines the data access methods (e.g., GetCountryCode). This is the "contract."
-
-    Create a Concrete Repository: Create a struct (e.g., AddressRepository) with a *sql.DB field. Implement the interface methods on this struct. This is where all your SQL queries live.
-
-    Inject the Repository: Update the main graph.Resolver struct to hold the repository interface, not the *sql.DB directly.
+-  Define an Interface: In the internal/repository package, create an interface that defines the data access methods (e.g., GetCountryCode). This is the "contract."
+-  Create a Concrete Repository: Create a struct (e.g., AddressRepository) with a *sql.DB field. Implement the interface methods on this struct. This is where all your SQL queries live.
+-  Inject the Repository: Update the main graph.Resolver struct to hold the repository interface, not the *sql.DB directly.
 
 5. Implement Resolvers & Directives 🔌
 
 With the repository in place, the resolver's job becomes very simple.
 
-    Update main.go:
+Update main.go:
 
-        Create the DB connection.
+-  Create the DB connection.
+-  Create an instance of the repository (e.g., repo := repository.NewAddressRepository(db)).
+-  Create the main resolver, injecting the repository (resolver := &graph.Resolver{Repo: repo}).
 
-        Create an instance of the repository (e.g., repo := repository.NewAddressRepository(db)).
+Write Resolver Logic: In graph/schema.resolvers.go, the resolver functions become simple one-liners that just call the corresponding method on the repository.
 
-        Create the main resolver, injecting the repository (resolver := &graph.Resolver{Repo: repo}).
-
-    Write Resolver Logic: In graph/schema.resolvers.go, the resolver functions become simple one-liners that just call the corresponding method on the repository.
-
-    func (r *queryResolver) CountryCodes(ctx context.Context, country *string) ([]*model.CountryInfo, error) {
+```go
+func (r *queryResolver) CountryCodes(ctx context.Context, country *string) ([]*model.CountryInfo, error) {
         return r.Repo.GetCountryCode(ctx, country)
     }
+```
 
-    Implement Directives: For features like auth, implement the directive function that was generated by gqlgen.
+Implement Directives: For features like auth, implement the directive function that was generated by gqlgen.
 
 6. Add Authentication 🔐
 
-Protect specific queries so they require an API key.
+I went with API key approach, which is simple. 
+- Protect specific queries so they require an API key.
+- Update Schema: Add a directive definition (directive @auth on FIELD_DEFINITION) and apply it to a query (myQuery: String! @auth).
+-  Create HTTP Middleware: Create a middleware that reads the Authorization: 
+- Bearer <token> header and injects the token into the request context. Also, Implement Directive: The Auth directive function reads the token from the context. If the token is valid, it calls next(ctx) to proceed; otherwise, it returns an error.
 
-    Update Schema: Add a directive definition (directive @auth on FIELD_DEFINITION) and apply it to a query (myQuery: String! @auth).
-
-    Create HTTP Middleware: In main.go, create a middleware that reads the Authorization: Bearer <token> header and injects the token into the request context.
-
-    Implement Directive: The Auth directive function reads the token from the context. If the token is valid, it calls next(ctx) to proceed; otherwise, it returns an error.
-
-7. Write Tests 🧪
-
-We used two types of tests for full coverage.
-
-    Integration Tests (for the Repository):
-
-        In internal/repository/, create a _test.go file.
-
-        Use an in-memory SQLite database for each test to ensure a clean slate.
-
-        Tests run the migration, seed data, call the repository method, and assert that the correct data is returned from the database. This proves your SQL is correct.
-
-    Unit Tests (for the Resolvers):
-
-        In graph/, create a _test.go file.
-
-        Create a mock of the repository interface.
-
-        Inject the mock into the resolver.
-
-        Tests call the resolver and assert that the resolver correctly calls the mock and passes the data through. This proves your API layer is wired correctly.
-
-8. Prepare for Deployment 🚀
-
-Final steps to make the application portable and production-ready.
-
-    Externalize Configuration: Move hardcoded values like API_KEY and DB_PATH out of the code and into a .env file (for local) or environment variables (for production).
-
-    Add CORS: Use a middleware library like rs/cors in main.go to allow cross-origin requests from browser-based applications.
-
-    Containerize with Docker: Create a multi-stage Dockerfile to build a small, static Go binary and copy it into a minimal final image (like alpine). This makes your application easy to deploy anywhere.
+Finally, write tests and deploy. 😊 
