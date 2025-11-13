@@ -50,7 +50,7 @@ export const projectInfo: ProjectDetails[] = [
       "A tool for generating Amazon Ads bulk launch sheets for Sponsored Products, built with TanStack Start and TypeScript.",
     webUrl: "sh.xaaha.dev",
     tags: "TypeScript TanStack Tailwind CSS",
-    status: "Complete",
+    status: "Active",
   },
   {
     title: "Address API",
