@@ -37,14 +37,6 @@ export const projectInfo: ProjectDetails[] = [
     status: "Active",
   },
   {
-    title: "Pratik Picture",
-    description:
-      "I wanted a simple, fast, and good-looking home for my photography. So I made one. A custom static site built with just HTML, CSS, and JS. No frameworks, just vibes.",
-    webUrl: "https://pratikpicture.com/",
-    tags: "HTML CSS JS Photography",
-    status: "Complete",
-  },
-  {
     title: "Sheet Happens",
     description:
       "A tool for generating Amazon Ads bulk launch sheets for Sponsored Products, built with TanStack Start and TypeScript.",
@@ -59,5 +51,13 @@ export const projectInfo: ProjectDetails[] = [
     webUrl: "https://github.com/xaaha/address-api",
     tags: "Go",
     status: "Complete",
+  },
+  {
+    title: "Pratik Picture",
+    description:
+      "I wanted a simple, fast, and good-looking home for my photography. So I made one. A custom static site built with just HTML, CSS, and JS. No frameworks, just vibes.",
+    webUrl: "https://pratikpicture.com/",
+    tags: "HTML CSS JS Photography",
+    status: "Archived",
   },
 ];
