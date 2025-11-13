@@ -48,7 +48,7 @@ export const projectInfo: ProjectDetails[] = [
     title: "Address API",
     description:
       "Graphql API, built for internationalization testing, this API returns five complete, randomly selected valid addresses with phone numbers from over 20,000 real-world entries—filtered by country code.",
-    webUrl: "https://github.com/xaaha/address-api",
+    githubUrl: "https://github.com/xaaha/address-api",
     tags: "Go",
     status: "Complete",
   },
