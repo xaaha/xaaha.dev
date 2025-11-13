@@ -45,19 +45,19 @@ export const projectInfo: ProjectDetails[] = [
     status: "Complete",
   },
   {
-    title: "Address API",
-    description:
-      "Graphql API, built for internationalization testing, this API returns five complete, randomly selected valid addresses with phone numbers from over 20,000 real-world entries—filtered by country code.",
-    webUrl: "https://github.com/xaaha/address-api",
-    tags: "Go",
-    status: "Complete",
-  },
-  {
     title: "Sheet Happens",
     description:
       "A tool for generating Amazon Ads bulk launch sheets for Sponsored Products, built with TanStack Start and TypeScript.",
     webUrl: "sh.xaaha.dev",
     tags: "TypeScript TanStack Tailwind CSS",
+    status: "Complete",
+  },
+  {
+    title: "Address API",
+    description:
+      "Graphql API, built for internationalization testing, this API returns five complete, randomly selected valid addresses with phone numbers from over 20,000 real-world entries—filtered by country code.",
+    webUrl: "https://github.com/xaaha/address-api",
+    tags: "Go",
     status: "Complete",
   },
 ];
