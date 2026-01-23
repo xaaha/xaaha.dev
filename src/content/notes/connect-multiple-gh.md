@@ -13,10 +13,16 @@ To connect and authorize multiple GitHub accounts from the same computer, you ca
 Here is the tldr for connecting into github for one account
 
 ```bash
-ssh-keygen -t ed25519 -C "ryan.ferreira@guildeducation.com"
+# Generate an SSH key
+ssh-keygen -t ed25519 -C "test@email.com"
+# Start the SSH agent
 eval "$(ssh-agent -s)"
+# Add the key to the agent
 ssh-add ~/.ssh/id_ed25519
+# Copy the public key (add this to GitHub → Settings → SSH and GPG keys)
 cat ~/.ssh/id_ed25519.pub
+# Test the connection
+ssh -T git@github.com
 ```
 
 ## Steps
