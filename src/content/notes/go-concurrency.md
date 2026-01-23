@@ -1,16 +1,41 @@
 ---
-title: Go Concurrency Basics
-date: 2026-01-21
-description: Go Concurrency Basics
+title: Go Concurrency For Dummies
+date: 2026-01-22
+description: Go Concurrency For Dummies
 draft: true
 category: Go
 ---
 
-# Here is how the go concurrency works
+# Go Concurrency Basics
 
-Here is a simple example of how go concurrency works. Starting with waitgroups.
+Go concurrency is about structuring programs so multiple tasks can make progress independently using goroutines (lightweight threads) and channels (safe communication pipes).
 
-Waitgroup is used for co-ordination between channels. Remember **"Wait until N goroutines  are finished"**
+## Goroutines
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	items := []string{"apple", "banana", "cherry"}
+
+	go printItems(items) // starts concurrently, doesn't wait
+
+	time.Sleep(100 * time.Millisecond) // without this, main exits before goroutine finishes
+}
+
+func printItems(items []string) {
+	for _, item := range items {
+		fmt.Println(item)
+	}
+}
+```
+
+## WaitGroup: Waiting for Goroutines
 
 ```go
 package main
@@ -20,90 +45,242 @@ import (
 	"sync"
 )
 
-type Result struct {
-	Value string
-	Err   error
-}
-
 func main() {
-	fruits := []string{"apple", "ball", "cherry", "dragonfruit"}
+	items := []string{"apple", "banana", "cherry"}
 
-	ch := make(chan Result)
 	var wg sync.WaitGroup
+	wg.Add(1) // "I'm starting 1 goroutine"
 
-	wg.Add(1)
-	go printFruits(fruits, ch, &wg)
+	go printItems(items, &wg)
 
-	go func() {
-		wg.Wait()
-		close(ch)
-	}()
-
-	for res := range ch {
-		if res.Err != nil {
-			fmt.Println("error:", res.Err)
-			continue
-		}
-		fmt.Println(res.Value)
-	}
+	wg.Wait() // blocks until printItems calls Done
 }
 
-func printFruits(str []string, ch chan Result, wg *sync.WaitGroup) {
-	defer wg.Done()
+func printItems(items []string, wg *sync.WaitGroup) {
+	defer wg.Done() // "This goroutine is done"
 
-	for _, s := range str {
-		if s == "dog" {
-			ch <- Result{Err: fmt.Errorf("not a fruit")}
-			continue
-		}
-		ch <- Result{Value: s}
+	for _, item := range items {
+		fmt.Println(item)
 	}
 }
 ```
 
-## Basics of wait group
-
-
-
-## Channel Basics
+### Multiple Goroutines in a Loop
 
 ```go
 package main
 
 import (
 	"fmt"
+	"sync"
 )
 
-// Simple go routine channel example
+func main() {
+	items := []string{"apple", "banana", "cherry"}
 
-type Result struct {
-	Value string
-	Err   error
+	var wg sync.WaitGroup
+	wg.Add(len(items)) // Add BEFORE the loop, matching count
+
+	for _, item := range items {
+		go func(v string) {
+			defer wg.Done()
+			fmt.Println(v)
+		}(item) // pass item as argument to avoid closure bug
+	}
+
+	wg.Wait()
 }
+```
+
+## Channels: Communication Between Goroutines
+
+```go
+package main
+
+import "fmt"
 
 func main() {
-	fruits := []string{"apple", "ball", "cherry", "dragonfruit", "dog"}
-	c := make(chan Result)
+	items := []string{"apple", "banana", "cherry"}
 
-	go print(fruits, c)
+	ch := make(chan string) // unbuffered channel
 
-	for res := range c {
-		if res.Err != nil {
-			fmt.Println("error:", res.Err)
+	go func() {
+		for _, item := range items {
+			ch <- item // send (blocks until received)
 		}
-		fmt.Println(res.Value)
+		close(ch) // sender closes when done
+	}()
+
+	for msg := range ch { // receive until channel closes
+		fmt.Println(msg)
 	}
 }
+```
 
-func print(str []string, ch chan Result) {
-	defer close(ch)
-	for _, s := range str {
-		if s == "dog" {
-			ch <- Result{Err: fmt.Errorf("not a fruit")}
-			continue
-		}
-		ch <- Result{Value: s}
+### Buffered Channel
 
+```go
+package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan string, 2) // buffered channel (capacity 2)
+
+	ch <- "apple"  // doesn't block (buffer has space)
+	ch <- "banana" // doesn't block (buffer has space)
+	// ch <- "cherry" // would block (buffer full, no receiver)
+
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
+}
+```
+
+### WaitGroup + Channel Pattern
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	items := []string{"apple", "banana", "cherry"}
+
+	var wg sync.WaitGroup
+	results := make(chan string)
+
+	wg.Add(len(items))
+	for _, item := range items {
+		go func(v string) {
+			defer wg.Done()
+			results <- v
+		}(item)
 	}
+
+	go func() {
+		wg.Wait()      // wait for all senders
+		close(results) // then close channel
+	}()
+
+	for v := range results {
+		fmt.Println(v)
+	}
+}
+```
+
+## Worker Pool
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	items := []string{"apple", "banana", "cherry", "date", "elderberry"}
+
+	jobs := make(chan string)
+	var wg sync.WaitGroup
+
+	// start 3 workers
+	wg.Add(3)
+	for i := 1; i <= 3; i++ {
+		go worker(i, jobs, &wg)
+	}
+
+	// send jobs
+	for _, item := range items {
+		jobs <- item
+	}
+	close(jobs)
+
+	wg.Wait()
+}
+
+func worker(id int, jobs <-chan string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for job := range jobs {
+		fmt.Printf("worker %d: %s\n", id, job)
+	}
+}
+```
+
+## Semaphore: Limit Concurrency
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+func main() {
+	items := []string{"apple", "banana", "cherry", "date", "elderberry"}
+
+	sem := make(chan struct{}, 2) // max 2 concurrent goroutines
+	var wg sync.WaitGroup
+
+	wg.Add(len(items))
+	for _, item := range items {
+		go func(v string) {
+			defer wg.Done()
+			sem <- struct{}{} // acquire slot (blocks if full)
+			doExpensiveWork(v)
+			<-sem // release slot
+		}(item)
+	}
+
+	wg.Wait()
+}
+
+func doExpensiveWork(item string) {
+	fmt.Printf("processing %s\n", item)
+	time.Sleep(100 * time.Millisecond)
+}
+```
+
+## Common Mistakes
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	items := []string{"apple", "banana", "cherry"}
+
+	// BUG: Closure captures loop variable (pre-Go 1.22)
+	var wg1 sync.WaitGroup
+	wg1.Add(len(items))
+	for _, item := range items {
+		go func() {
+			defer wg1.Done()
+			fmt.Println(item) // prints last item multiple times
+		}()
+	}
+	wg1.Wait()
+
+	fmt.Println("---")
+
+	// FIX: Pass as argument
+	var wg2 sync.WaitGroup
+	wg2.Add(len(items))
+	for _, item := range items {
+		go func(v string) {
+			defer wg2.Done()
+			fmt.Println(v) // correct
+		}(item)
+	}
+	wg2.Wait()
 }
 ```
