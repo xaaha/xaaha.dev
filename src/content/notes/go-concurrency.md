@@ -188,8 +188,9 @@ func main() {
 	var wg sync.WaitGroup
 
 	// start 3 workers
-	wg.Add(3)
-	for i := 1; i <= 3; i++ {
+    limit := 3
+	wg.Add(limit)
+	for range limit {
 		go worker(i, jobs, &wg)
 	}
 
