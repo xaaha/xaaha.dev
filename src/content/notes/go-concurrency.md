@@ -225,6 +225,60 @@ func worker(id int, jobs <-chan string, wg *sync.WaitGroup) {
 }
 ```
 
+### Worker Pool with WaitGroup.Go (Go 1.24+)
+
+Go 1.24 introduced `WaitGroup.Go()` which combines `Add(1)`, spawning a goroutine, and `defer Done()` into a single call; use it for cleaner worker pool code when targeting Go 1.24+.
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	items := []string{"apple", "banana", "cherry", "dog"}
+
+	noItems := len(items)
+	workers := noItems
+
+	// pipe to send jobs
+	jobs := make(chan string, noItems)
+	// pipe for jobs to send result
+	result := make(chan string, noItems)
+
+	// start workers
+	var wg sync.WaitGroup
+	// assign job for each worker
+	for range workers {
+		wg.Go(func() {
+			for job := range jobs {
+				// we can do something with this job
+				// for now, let's just send this back to result
+				result <- job
+			}
+		})
+	}
+
+	// Send work to jobs channel
+	for _, fruit := range items {
+		jobs <- fruit
+	}
+	close(jobs)
+
+	// Wait for workers and close channel
+	go func() {
+		wg.Wait()
+		close(result)
+	}()
+
+	for res := range result {
+		fmt.Println(res)
+	}
+}
+```
+
 ## Semaphore: Limit Concurrency
 
 A semaphore uses a buffered channel to limit how many goroutines run simultaneously; use it to protect resources like API rate limits or database connections, but prefer worker pools when jobs are uniform.
