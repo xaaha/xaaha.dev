@@ -62,7 +62,7 @@ export GITHUB_TOKEN=$(gh auth token) # in your .zshrc or .bashrc
 ### Other helpful MCPs 
 
 ```json
-"awslabs.aws-documentation-mcp-server": {
+    "awslabs.aws-documentation-mcp-server": {
       "command": "uvx",
       "args": [
         "awslabs.aws-documentation-mcp-server@latest"
