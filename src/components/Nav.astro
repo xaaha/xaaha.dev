@@ -2,12 +2,15 @@
 import { Icon } from "astro-icon/components";
 import Link from "./Link.astro";
 import ThemeIcon from "@components/ThemeIcon.astro";
-import { github, linkedin } from "src/data/indexData.ts";
 
 const navData: {
   name: string;
   path: string;
 }[] = [
+  {
+    name: "Projects",
+    path: "/projects/",
+  },
   {
     name: "Notes",
     path: "/notes/",
@@ -46,16 +49,6 @@ const navData: {
           <Icon name="search" />
         </a>
         <ThemeIcon />
-        <a href={github} class="action-icon" aria-label="View GitHub profile">
-          <Icon name="github" />
-        </a>
-        <a
-          href={linkedin}
-          class="action-icon"
-          aria-label="View LinkedIn profile"
-        >
-          <Icon name="linkedin" />
-        </a>
       </div>
     </div>
 
@@ -90,20 +83,6 @@ const navData: {
           </ul>
           <div class="mobile-menu-actions">
             <ThemeIcon />
-            <a
-              href="https://github.com/xaaha/"
-              class="action-icon"
-              aria-label="View GitHub profile"
-            >
-              <Icon name="github" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/pthapa1"
-              class="action-icon"
-              aria-label="View LinkedIn profile"
-            >
-              <Icon name="linkedin" />
-            </a>
           </div>
         </div>
       </div>
