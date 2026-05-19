@@ -9,7 +9,8 @@ export const bio = {
   focusProject: {
     name: "Hulak",
     url: "https://github.com/xaaha/hulak",
-    tagline: "a fast, no-fuss CLI API client for the terminal.",
+    tagline:
+      "a fast, no-fuss CLI API client for the terminal. I like simple software, fast workflows, and good tooling.",
   },
   notesAsideTitle: "Recent notes",
   notesAllLabel: "All notes",
