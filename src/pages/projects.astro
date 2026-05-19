@@ -1,0 +1,116 @@
+---
+import Mainlayout from "@layouts/Mainlayout.astro";
+import ProjectCard from "@components/ProjectCard.astro";
+
+interface ProjectDetails {
+  title: string;
+  description: string;
+  githubUrl?: string;
+  webUrl?: string;
+  tags?: string;
+  status?: "Active" | "Complete" | "Archived";
+}
+export const projectInfo: ProjectDetails[] = [
+  {
+    title: "Hulak",
+    description:
+      "I wanted a fast, no-fuss API client I could run straight from the terminal. So I built Hulak—a lightweight CLI tool written in Go that lets you define requests in YAML and fire them off with zero bloat.",
+    githubUrl: "https://github.com/xaaha/hulak",
+    tags: "Go CLI-APP Tooling",
+    status: "Active",
+  },
+  {
+    title: "This Website",
+    description:
+      "A personal corner of the internet to share what I’ve learned and what I’m building. Powered by Astro for speed, styled for clarity, and always a work in progress—just like me.",
+    githubUrl: "https://github.com/xaaha/tldrnotes",
+    tags: "Astro TypeScript CSS JS",
+    status: "Active",
+  },
+  {
+    title: "Sheet Happens",
+    description:
+      "A tool for generating Amazon Ads bulk launch sheets for Sponsored Products, built with TanStack Start and TypeScript.",
+    webUrl: "sh.xaaha.dev",
+    tags: "TypeScript TanStack Tailwind CSS",
+    status: "Active",
+  },
+  {
+    title: "Address API",
+    description:
+      "Graphql API, built for internationalization testing, this API returns five complete, randomly selected valid addresses with phone numbers from over 20,000 real-world entries—filtered by country code.",
+    githubUrl: "https://github.com/xaaha/address-api",
+    tags: "Go",
+    status: "Complete",
+  },
+  {
+    title: "Pratik Picture",
+    description:
+      "I wanted a simple, fast, and good-looking home for my photography. So I made one. A custom static site built with just HTML, CSS, and JS. No frameworks, just vibes.",
+    webUrl: "https://pratikpicture.com/",
+    tags: "HTML CSS JS Photography",
+    status: "Archived",
+  },
+];
+---
+
+<Mainlayout
+  title="Projects | xaaha"
+  description="Projects and side hustles by xaaha"
+>
+  <section class="projects container" aria-label="Projects">
+    <header class="projects__header">
+      <h1 class="projects__title">Projects</h1>
+      <p class="projects__lede">
+        Side hustles, dev-tools, and weekend experiments.
+      </p>
+    </header>
+    <div class="project-grid">
+      {
+        projectInfo.map((project) => (
+          <ProjectCard
+            title={project.title}
+            description={project.description}
+            githubUrl={project.githubUrl}
+            webUrl={project.webUrl}
+            tags={project.tags}
+            status={project.status}
+          />
+        ))
+      }
+    </div>
+  </section>
+</Mainlayout>
+
+<style>
+  .projects__header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .projects__title {
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+    color: hsl(var(--txt));
+    line-height: var(--lh-1-1);
+    margin-bottom: var(--space-sm);
+  }
+
+  .projects__lede {
+    font-size: var(--fs-lg);
+    color: hsl(var(--txt) / 0.7);
+    max-width: 65ch;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 768px) {
+    .project-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2xl);
+    }
+  }
+</style>

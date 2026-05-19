@@ -1,152 +1,183 @@
 ---
 import Mainlayout from "@layouts/Mainlayout.astro";
-import Link from "@components/Link.astro";
-import ProjectCard from "@components/ProjectCard.astro";
-import { hero, projectInfo, email } from "../../src/data/indexData";
+import { bio, email } from "../../src/data/indexData";
+import { getCollection } from "astro:content";
+
 const mailTo = `mailto:${email}`;
+const { focusProject } = bio;
+
+const allNotes = await getCollection("notes", ({ data }) => !data.draft);
+const recentNotes = allNotes
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 5);
 ---
 
-<Mainlayout title={hero.title}>
-  <section class="container about" aria-label="About Me">
-    <div class="about__image-container">
-      <img
-        src="/images/hi.jpg"
-        alt="A portrait of Pratik"
-        width="200"
-        height="330"
-      />
-    </div>
-    <div class="hero-content">
-      <h1 class="hero-greeting">Hey, I'm Pratik.</h1>
-      <h2 class="hero-title">{hero.visibleTitle}</h2>
-      <p class="hero-subtitle">
-        {hero.subtitle}
-      </p>
-      <p class="hero-aside">{hero.aside}</p>
-      <div class="hero-cta">
-        <Link href={mailTo} style="primary" text={email} />
-      </div>
-    </div>
-  </section>
+<Mainlayout title={bio.title}>
+  <div class="home container">
+    <section class="bio" aria-label="About">
+      <p class="bio__intro">{bio.intro}</p>
 
-  <section class="projects container">
-    <h2 class="section-title">Side Hustle</h2>
-    <div class="project-grid">
-      {
-        projectInfo.map((project) => (
-          <ProjectCard
-            title={project.title}
-            description={project.description}
-            githubUrl={project.githubUrl}
-            webUrl={project.webUrl}
-            tags={project.tags}
-            status={project.status}
-          />
-        ))
-      }
-    </div>
-  </section>
+      <p class="bio__focus">
+        {bio.focusLeadIn}{" "}
+        <a
+          class="bio__focus-link"
+          href={focusProject.url}
+          target="_blank"
+          rel="noopener noreferrer">{focusProject.name}</a
+        >, {focusProject.tagline}
+      </p>
+
+      <p class="bio__contact">
+        Reach me at <a class="bio__contact-link" href={mailTo}>{email}</a>.
+      </p>
+    </section>
+
+    <aside class="notes-aside" aria-label="Recent notes">
+      <h2 class="notes-aside__title">{bio.notesAsideTitle}</h2>
+      <ul class="notes-aside__list">
+        {
+          recentNotes.map((note) => (
+            <li class="notes-aside__item">
+              <a class="notes-aside__link" href={`/notes/${note.id}/`}>
+                {note.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="notes-aside__all" href="/notes/">{bio.notesAllLabel} →</a>
+    </aside>
+  </div>
 </Mainlayout>
 
 <style>
-  .about {
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: center;
-    gap: var(--space-lg);
-  }
-
-  @media (min-width: 768px) {
-    .about {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  .about__image-container {
-    display: grid;
-    place-items: center;
-    justify-self: center;
-  }
-
-  .about__image-container img {
-    width: 200px;
-    height: 330px;
-    border-radius: var(--radius-lg);
-    object-fit: cover;
-    box-shadow: var(--shadow-lg);
-  }
-
-  @media (min-width: 768px) {
-    .about__image-container {
-      order: 1;
-    }
-    .about__image-container img {
-      width: 300px;
-      height: 495px;
-    }
-  }
-
-  .hero-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .hero-greeting {
-    font-size: var(--fs-lg);
-    font-weight: 500;
-    color: hsl(var(--accent));
-    margin-bottom: var(--space-xs);
-  }
-
-  .hero-title {
-    font-size: var(--fs-2xl);
-    font-weight: 700;
-    color: hsl(var(--txt));
-    line-height: var(--lh-1-1);
-    max-width: 20ch;
-    margin-bottom: var(--space-lg);
-  }
-
-  .hero-subtitle {
-    font-size: var(--fs-lg);
-    color: hsl(var(--txt) / 0.8);
-    max-width: 65ch;
-    line-height: var(--lh-1-4);
-    margin-bottom: var(--space-lg);
-  }
-
-  .hero-aside {
-    font-size: var(--fs-md);
-    color: hsl(var(--txt) / 0.6);
-    font-style: italic;
-    border-left: 3px solid hsl(var(--accent) / 0.3);
-    padding-left: var(--space-sm);
-  }
-
-  .hero-cta {
-    margin-top: var(--space-xl);
-  }
-
-  .projects {
-    border-top: 1px solid hsl(var(--txt) / 0.1);
-  }
-
-  .section-title {
-    font-size: var(--fs-xl);
-    text-align: center;
-    margin-bottom: var(--space-2xl);
-  }
-
-  .project-grid {
+  .home {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-2xl);
   }
 
-  @media (min-width: 768px) {
-    .project-grid {
-      grid-template-columns: repeat(2, 1fr);
+  .bio {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: 60ch;
+  }
+
+  .bio__intro {
+    font-size: var(--fs-lg);
+    color: hsl(var(--txt));
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .bio__focus {
+    font-size: var(--fs-base);
+    color: hsl(var(--txt) / 0.8);
+    line-height: 1.65;
+  }
+
+  .bio__focus-link {
+    color: hsl(var(--accent));
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .bio__focus-link:hover {
+    text-decoration: none;
+  }
+
+  .bio__contact {
+    font-size: var(--fs-base);
+    color: hsl(var(--txt) / 0.7);
+    line-height: 1.65;
+    margin-top: var(--space-sm);
+  }
+
+  .bio__contact-link {
+    color: hsl(var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .bio__contact-link:hover {
+    text-decoration: none;
+  }
+
+  .notes-aside {
+    border-top: 1px solid hsl(var(--txt) / 0.1);
+    padding-top: var(--space-lg);
+  }
+
+  .notes-aside__title {
+    display: inline-block;
+    font-size: var(--fs-md);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(var(--accent));
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-2xs);
+    border-bottom: 2px solid hsl(var(--accent) / 0.4);
+  }
+
+  .notes-aside__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .notes-aside__item {
+    line-height: 1.5;
+  }
+
+  .notes-aside__link {
+    font-size: var(--fs-md);
+    color: hsl(var(--txt) / 0.9);
+    text-decoration: none;
+  }
+
+  .notes-aside__link:hover {
+    color: hsl(var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .notes-aside__all {
+    display: inline-block;
+    margin-top: var(--space-md);
+    font-size: var(--fs-sm);
+    color: hsl(var(--accent));
+    text-decoration: none;
+  }
+
+  .notes-aside__all:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (min-width: 900px) {
+    .home {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: var(--space-3xl, 4rem);
+      align-items: start;
+    }
+
+    .bio__intro {
+      font-size: var(--fs-xl);
+    }
+
+    .notes-aside {
+      border-top: none;
+      padding-top: 0;
+      border-left: 1px solid hsl(var(--txt) / 0.1);
+      padding-left: var(--space-xl);
+      position: sticky;
+      top: var(--space-xl);
     }
   }
 </style>
