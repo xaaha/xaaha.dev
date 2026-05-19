@@ -1,12 +1,69 @@
 ---
-
+import { email, github, linkedin } from "src/data/indexData.ts";
+const mailTo = `mailto:${email}`;
 ---
 
-<footer>
-  <small>
-    Copyright &copy; <span id="copyright"></span>
-  </small>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <small class="site-footer__copy">
+      &copy; <span id="copyright"></span>
+    </small>
+    <nav class="site-footer__socials" aria-label="Social links">
+      <a href={mailTo}>Email</a>
+      <span aria-hidden="true">·</span>
+      <a href={github} rel="me noopener noreferrer" target="_blank">GitHub</a>
+      <span aria-hidden="true">·</span>
+      <a href={linkedin} rel="me noopener noreferrer" target="_blank"
+        >LinkedIn</a
+      >
+    </nav>
+  </div>
 </footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid hsl(var(--txt) / 0.08);
+    margin-top: var(--space-3xl, 4rem);
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .site-footer__inner {
+    max-width: var(--container-max, 70rem);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--fs-sm);
+    color: hsl(var(--txt) / 0.6);
+  }
+
+  .site-footer__socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+    align-items: center;
+  }
+
+  .site-footer__socials a {
+    color: hsl(var(--txt) / 0.7);
+    text-decoration: none;
+  }
+
+  .site-footer__socials a:hover {
+    color: hsl(var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (min-width: 768px) {
+    .site-footer__inner {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+</style>
 
 <script>
   const copyrightElement = document.querySelector("#copyright");
