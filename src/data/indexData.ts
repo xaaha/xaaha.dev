@@ -4,14 +4,12 @@ export const linkedin = "https://www.linkedin.com/in/pthapa1";
 
 export const bio = {
   title: "xaaha | Software Engineer",
-  intro:
-    "I'm xaaha. By day I'm a software engineer. By night I build dev-tools, and tinker in Neovim.",
-  focusLeadIn: "Currently building",
+  intro: "I’m Xaaha. I build software and developer tools.",
+  focusLeadIn: "Currently working on",
   focusProject: {
     name: "Hulak",
     url: "https://github.com/xaaha/hulak",
-    tagline:
-      "a fast, no-fuss CLI API client written in Go. Define requests in YAML, fire them straight from your terminal.",
+    tagline: "a fast, no-fuss CLI API client for the terminal.",
   },
   notesAsideTitle: "Recent notes",
   notesAllLabel: "All notes",
