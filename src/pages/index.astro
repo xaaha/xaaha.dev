@@ -15,7 +15,23 @@ const recentNotes = allNotes
 <Mainlayout title={bio.title}>
   <div class="home container">
     <section class="bio" aria-label="About">
-      <p class="bio__intro">{bio.intro}</p>
+      <div class="bio__terminal" aria-hidden="true">
+        <div class="bio__cmd">
+          <span class="bio__prompt">$</span>
+          <span class="bio__cmd-text">{bio.prompt}</span>
+        </div>
+        <div class="bio__output">
+          <span class="bio__arrow">&gt;</span>
+          <span class="bio__name">{bio.name}</span><span class="bio__cursor"
+          ></span>
+          <span class="bio__status">
+            <span class="bio__status-dot"></span>
+            {bio.status}
+          </span>
+        </div>
+      </div>
+
+      <p class="bio__role">{bio.role}</p>
 
       <p class="bio__focus">
         {bio.focusLeadIn}{" "}
@@ -64,7 +80,110 @@ const recentNotes = allNotes
     max-width: 60ch;
   }
 
-  .bio__intro {
+  .bio__terminal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-sm) var(--space-md);
+    background-color: hsl(var(--muted));
+    border: 1px solid hsl(var(--txt) / 0.08);
+    border-left: 3px solid hsl(var(--accent));
+    border-radius: var(--radius-md);
+    font-family: "IBM Plex Mono", monospace;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .bio__cmd {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6ch;
+    font-size: var(--fs-base);
+    color: hsl(var(--txt) / 0.6);
+  }
+
+  .bio__prompt {
+    color: hsl(var(--accent));
+    font-weight: 700;
+  }
+
+  .bio__cmd-text {
+    color: hsl(var(--txt) / 0.85);
+  }
+
+  .bio__output {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6ch;
+    font-size: var(--fs-lg);
+    line-height: 1.2;
+  }
+
+  .bio__arrow {
+    color: hsl(var(--accent));
+    font-weight: 700;
+  }
+
+  .bio__name {
+    color: hsl(var(--txt));
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .bio__cursor {
+    display: inline-block;
+    width: 0.55ch;
+    height: 1em;
+    background-color: hsl(var(--accent));
+    transform: translateY(0.12em);
+    animation: bio-cursor-blink 1.05s steps(2, end) infinite;
+  }
+
+  @keyframes bio-cursor-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .bio__status {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-size: var(--fs-sm);
+    color: hsl(var(--txt) / 0.75);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+  }
+
+  .bio__status-dot {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: var(--radius-full);
+    background-color: hsl(145, 63%, 48%);
+    box-shadow: 0 0 0 0 hsl(145, 63%, 48% / 0.6);
+    animation: bio-status-pulse 2s ease-out infinite;
+  }
+
+  @keyframes bio-status-pulse {
+    0% {
+      box-shadow: 0 0 0 0 hsl(145, 63%, 48% / 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 0.55em hsl(145, 63%, 48% / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 hsl(145, 63%, 48% / 0);
+    }
+  }
+
+  .bio__role {
     font-size: var(--fs-lg);
     color: hsl(var(--txt));
     line-height: 1.4;
@@ -167,7 +286,11 @@ const recentNotes = allNotes
       align-items: start;
     }
 
-    .bio__intro {
+    .bio__role {
+      font-size: var(--fs-xl);
+    }
+
+    .bio__output {
       font-size: var(--fs-xl);
     }
 

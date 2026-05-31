@@ -4,7 +4,10 @@ export const linkedin = "https://www.linkedin.com/in/pthapa1";
 
 export const bio = {
   title: "xaaha | Software Engineer",
-  intro: "I’m Xaaha. I build software and developer tools.",
+  prompt: "whoami",
+  name: "xaaha",
+  status: "Currently shipping",
+  role: "Solo engineer. I build software and developer tools.",
   focusLeadIn: "Currently working on",
   focusProject: {
     name: "Hulak",
