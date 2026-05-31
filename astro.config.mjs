@@ -9,6 +9,7 @@ import react from "@astrojs/react";
 import netlify from "@astrojs/netlify";
 
 export default defineConfig({
+  site: "https://xaaha.dev",
   integrations: [icon(), mdx(), react()],
 
   markdown: {

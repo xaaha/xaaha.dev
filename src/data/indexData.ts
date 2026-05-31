@@ -4,17 +4,36 @@ export const linkedin = "https://www.linkedin.com/in/pthapa1";
 
 export const bio = {
   title: "xaaha | Software Engineer",
-  prompt: "whoami",
   name: "xaaha",
-  status: "Currently shipping",
-  role: "Solo engineer. I build software and developer tools.",
-  focusLeadIn: "Currently working on",
+  role: "Five years of CLI obsession. Hand-rolled software and developer tools.",
+  mailArg: "let's-work-together",
   focusProject: {
     name: "Hulak",
     url: "https://github.com/xaaha/hulak",
-    tagline:
-      "a fast, no-fuss CLI API client for the terminal. I like simple software, fast workflows, and good tooling.",
+    tap: "xaaha/tap/hulak",
   },
-  notesAsideTitle: "Recent notes",
-  notesAllLabel: "All notes",
+  sections: {
+    shipping: "what I'm shipping",
+    alsoShipped: "also shipped",
+  },
+  notesAsideTitle: "recent notes",
+  notesAllLabel: "all notes",
 };
+
+export const selectedWork = [
+  {
+    slug: "sheet-happens",
+    url: "https://sh.xaaha.dev",
+    blurb: "TanStack · Amazon Ads bulk launch sheets",
+  },
+  {
+    slug: "address-api",
+    url: "https://github.com/xaaha/address-api",
+    blurb: "Go · GraphQL · 20k real-world addresses by country",
+  },
+  {
+    slug: "tldrnotes",
+    url: "https://github.com/xaaha/tldrnotes",
+    blurb: "Astro · this site",
+  },
+];
