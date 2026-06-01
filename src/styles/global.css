@@ -72,9 +72,17 @@ h6 {
 
   /* dynamic font sizes adapted from utopia.fyi */
   --fs-sm: clamp(0.78rem, calc(0.75rem + 0.17vw), 0.88rem);
-  --fs-base: clamp(0.92rem, calc(0.82rem + 0.5vw), 1.08rem); /* between sm and md */
+  --fs-base: clamp(
+    0.92rem,
+    calc(0.82rem + 0.5vw),
+    1.08rem
+  ); /* between sm and md */
   --fs-md: clamp(1rem, calc(0.91rem + 0.43vw), 1.125rem); /*font sizing*/
-  --fs-article: clamp(0.9rem, calc(0.82rem + 0.39vw), 1.0125rem); /* 90% of fs-md for article body */
+  --fs-article: clamp(
+    0.9rem,
+    calc(0.82rem + 0.39vw),
+    1.0125rem
+  ); /* 90% of fs-md for article body */
   --fs-lg: clamp(1.35rem, calc(1.22rem + 0.64vw), 1.72rem);
   --fs-xl: clamp(1.75rem, calc(1.6rem + 0.75vw), 2rem);
   --fs-2xl: clamp(2rem, calc(2.8rem + 1.2vw), 2.4rem);
@@ -297,7 +305,7 @@ button {
     user-select: none;
   }
 
-  & (svg) {
+  & svg {
     height: var(--fs-md);
     width: var(--fs-md);
   }
@@ -402,98 +410,10 @@ button {
   }
 }
 
-/* center the button horizontally within the content cell */
-.center-contact {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-md);
-}
-
-.about {
-  display: grid;
-  gap: var(--space-lg);
-  align-items: center;
-  margin-block: var(--space-xl);
-
-  @media (--md) {
-    grid-template-columns: 1fr 2fr;
-    place-content: center;
-    margin-block: var(--space-xl);
-  }
-
-  & img {
-    border-radius: var(--radius-full);
-    height: 400px;
-    width: min(300px, 100%);
-    box-shadow: var(--shadow-lg);
-    object-fit: cover;
-    object-position: center;
-
-    @media (--md) {
-      justify-self: end;
-    }
-  }
-
-  & .content {
-    display: grid;
-    gap: var(--space-xs);
-    max-width: var(--content-md);
-  }
-}
-
 .post-container {
   margin-block: var(--space-md);
   display: grid;
   gap: var(--space-lg);
-}
-
-/* cards */
-.card {
-  position: relative;
-  display: grid;
-  gap: var(--space-sm); /* Keep the gap for stacked content */
-  background-color: hsl(var(--muted));
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-
-  & [aria-hidden="true"] {
-    margin-inline: calc(var(--space-md) * -1);
-    margin-block: var(--space-md);
-  }
-
-  & img {
-    box-shadow: var(--shadow-sm);
-    object-fit: cover;
-  }
-
-  & a {
-    text-decoration: none;
-  }
-
-  & .content {
-    display: grid;
-    gap: var(--space-xs);
-  }
-}
-
-/* Make other links/buttons clickable on top of the stretched link  
- * for notes card*/
-.card,
-.card .content small a {
-  position: relative;
-  z-index: 1;
-}
-
-/* This is the main link inside the card's title */
-.card .content .h3 a:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 0;
 }
 
 /* backtick inline code */
@@ -505,10 +425,6 @@ button {
   font-size: 0.88em;
   font-family: "IBM Plex Mono", monospace;
   font-weight: lighter;
-}
-
-.card {
-  --accent: var(--txt);
 }
 
 /* posts */
@@ -550,43 +466,6 @@ header {
   object-position: center;
   @media (--lg) {
     border-radius: var(--radius-md);
-  }
-}
-
-/* category cloud */
-.categories {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-
-  & li {
-    display: grid;
-    place-items: center;
-  }
-}
-
-[aria-label="Related posts"] {
-  padding: 0;
-  text-align: center;
-  display: grid;
-  gap: var(--space-sm);
-  justify-items: center;
-
-  & .post {
-    background-color: hsl(var(--muted));
-    padding: var(--space-xs);
-    gap: var(--space-2xs);
-    border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-sm);
-    width: fit-content;
-
-    & a {
-      text-decoration: none;
-    }
   }
 }
 

@@ -91,6 +91,22 @@ const navData: {
 </nav>
 
 <style>
+  /* recede chrome so the terminal stays center stage */
+  nav[aria-label="Primary"] {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  nav[aria-label="Primary"] :global(a) {
+    color: hsl(var(--txt) / 0.6);
+    font-size: var(--fs-sm);
+    letter-spacing: 0.01em;
+  }
+
+  nav[aria-label="Primary"] :global(a:hover) {
+    color: hsl(var(--accent));
+  }
+
   .desktop-nav {
     display: flex;
     align-items: center;

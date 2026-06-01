@@ -4,14 +4,17 @@ export const linkedin = "https://www.linkedin.com/in/pthapa1";
 
 export const bio = {
   title: "xaaha | Software Engineer",
-  intro: "I’m Xaaha. I build software and developer tools.",
-  focusLeadIn: "Currently working on",
+  name: "xaaha",
+  role: "Building software that's fast, reliable, and pleasure to use",
+  mailArg: "let's-work-together",
   focusProject: {
     name: "Hulak",
     url: "https://github.com/xaaha/hulak",
-    tagline:
-      "a fast, no-fuss CLI API client for the terminal. I like simple software, fast workflows, and good tooling.",
+    tap: "xaaha/tap/hulak",
   },
-  notesAsideTitle: "Recent notes",
-  notesAllLabel: "All notes",
+  sections: {
+    shipping: "what I'm shipping",
+  },
+  notesAsideTitle: "recent notes",
+  notesAllLabel: "all notes",
 };

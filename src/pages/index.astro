@@ -1,10 +1,12 @@
 ---
 import Mainlayout from "@layouts/Mainlayout.astro";
+import { Icon } from "astro-icon/components";
 import { bio, email } from "../../src/data/indexData";
 import { getCollection } from "astro:content";
 
 const mailTo = `mailto:${email}`;
-const { focusProject } = bio;
+const { focusProject, sections } = bio;
+const repoPath = focusProject.url.replace(/^https?:\/\//, "");
 
 const allNotes = await getCollection("notes", ({ data }) => !data.draft);
 const recentNotes = allNotes
@@ -13,113 +15,473 @@ const recentNotes = allNotes
 ---
 
 <Mainlayout title={bio.title}>
+  <script is:inline>
+    if (sessionStorage.getItem("xaaha-seen")) {
+      document.documentElement.classList.add("term-seen");
+    } else {
+      sessionStorage.setItem("xaaha-seen", "1");
+    }
+  </script>
+
   <div class="home container">
-    <section class="bio" aria-label="About">
-      <p class="bio__intro">{bio.intro}</p>
+    <section class="term" aria-label="About">
+      <div class="term__body">
+        <!-- PAST: whoami + name + role -->
+        <div class="term__section--past">
+          <div class="term__block term__reveal" style="--rd: 100ms">
+            <div class="term__cmd" aria-hidden="true">
+              <span class="term__prompt">$</span>
+              <span class="term__cmd-text">whoami</span>
+            </div>
+          </div>
+          <div class="term__output">
+            <h1 class="term__name term__reveal" style="--rd: 220ms">
+              {bio.name}
+            </h1>
+            <p class="term__role term__reveal" style="--rd: 340ms">
+              <span class="term__comment-mark" aria-hidden="true">#</span>
+              {bio.role}
+            </p>
+          </div>
+        </div>
 
-      <p class="bio__focus">
-        {bio.focusLeadIn}{" "}
-        <a
-          class="bio__focus-link"
-          href={focusProject.url}
-          target="_blank"
-          rel="noopener noreferrer">{focusProject.name}</a
-        >, {focusProject.tagline}
-      </p>
+        <!-- PRESENT: currently shipping -->
+        <div>
+          <h2 class="term__divider term__reveal" style="--rd: 540ms">
+            <span class="term__divider-hash" aria-hidden="true">#</span>
+            {sections.shipping}
+          </h2>
+          <div class="term__block term__reveal" style="--rd: 660ms">
+            <div class="term__cmd" aria-hidden="true">
+              <span class="term__prompt">$</span>
+              <span class="term__cmd-text">brew install {focusProject.tap}</span
+              >
+            </div>
+          </div>
+          <div class="term__output">
+            <div
+              class="term__line term__reveal"
+              style="--rd: 780ms"
+              aria-hidden="true"
+            >
+              <span class="term__marker">==&gt;</span>
+              <span>Tapping xaaha/tap</span>
+            </div>
+            <div class="term__install-result term__reveal" style="--rd: 900ms">
+              <div class="term__progress" aria-hidden="true">
+                ################################################################################
+              </div>
+              <a
+                class="term__success"
+                href={focusProject.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="term__success-emoji" aria-hidden="true">🍺</span>
+                <span class="term__success-name">{focusProject.name}</span>
+                <span class="term__success-arrow" aria-hidden="true">→</span>
+                <span class="term__success-path">{repoPath}</span>
+              </a>
+            </div>
+          </div>
+        </div>
 
-      <p class="bio__contact">
-        Reach me at <a class="bio__contact-link" href={mailTo}>{email}</a>.
-      </p>
+        <!-- ACTIVE: mail prompt -->
+        <a class="term__mail term__reveal" style="--rd: 1100ms" href={mailTo}>
+          <div class="term__cmd">
+            <span class="term__prompt" aria-hidden="true">$</span>
+            <span class="term__cmd-text"
+              >mail <span class="term__mail-arg">{bio.mailArg}</span><span
+                class="term__cursor"
+                aria-hidden="true"></span></span
+            >
+          </div>
+        </a>
+      </div>
     </section>
 
     <aside class="notes-aside" aria-label="Recent notes">
-      <h2 class="notes-aside__title">{bio.notesAsideTitle}</h2>
+      <h2 class="notes-aside__title">
+        <span class="notes-aside__hash" aria-hidden="true">#</span>
+        {bio.notesAsideTitle}
+      </h2>
       <ul class="notes-aside__list">
         {
           recentNotes.map((note) => (
             <li class="notes-aside__item">
               <a class="notes-aside__link" href={`/notes/${note.id}/`}>
-                {note.data.title}
+                <span class="notes-aside__link-text">{note.data.title}</span>
+                <Icon
+                  name="chevron-right"
+                  class="notes-aside__chevron"
+                  aria-hidden="true"
+                />
               </a>
             </li>
           ))
         }
       </ul>
-      <a class="notes-aside__all" href="/notes/">{bio.notesAllLabel} →</a>
+      <a class="notes-aside__all" href="/notes/">
+        <span>{bio.notesAllLabel}</span>
+        <Icon
+          name="chevron-right"
+          class="notes-aside__chevron"
+          aria-hidden="true"
+        />
+      </a>
     </aside>
   </div>
 </Mainlayout>
 
 <style>
   .home {
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-2xl);
+    gap: var(--space-xl);
+    align-items: start;
   }
 
-  .bio {
+  @media (--md) {
+    .home {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+      gap: var(--space-2xl);
+    }
+  }
+
+  /* terminal window — dark palette, regardless of site theme */
+  .term {
+    --t-bg: 220 16% 11%;
+    --t-text: 220 14% 92%;
+    --t-text-muted: 220 8% 62%;
+    --t-text-dim: 220 8% 42%;
+    --t-prompt: 130 55% 66%;
+    --t-accent: 28 95% 64%;
+    --t-border: 220 16% 20%;
+
+    width: 100%;
+    max-width: 88ch;
+    background-color: hsl(var(--t-bg));
+    color: hsl(var(--t-text));
+    border: 1px solid hsl(var(--t-border));
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 10px 28px hsl(0 0% 0% / 0.35);
+  }
+
+  /* terminal body */
+  .term__body {
+    padding: var(--space-md);
+    line-height: 1.6;
+  }
+
+  .term__body > :first-child {
+    margin-block-start: 0;
+  }
+
+  .term__section--past {
+    opacity: 0.88;
+  }
+
+  /* a section block (command + output) */
+  .term__block {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
-    max-width: 60ch;
+    gap: var(--space-2xs);
   }
 
-  .bio__intro {
-    font-size: var(--fs-lg);
-    color: hsl(var(--txt));
-    line-height: 1.4;
+  .term__cmd {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.7ch;
+    font-size: var(--fs-base);
+    color: hsl(var(--t-text));
+  }
+
+  .term__prompt {
+    color: hsl(var(--t-prompt));
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .term__cmd-text {
+    color: hsl(var(--t-text));
+    overflow-wrap: anywhere;
+  }
+
+  .term__output {
+    padding-left: 1.7ch;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    margin-top: var(--space-2xs);
+  }
+
+  .term__name {
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    color: hsl(var(--t-text));
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  .term__role {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7ch;
+    margin: 0;
+    font-size: var(--fs-base);
+    line-height: 1.5;
+    color: hsl(var(--t-text-muted));
+  }
+
+  .term__comment-mark {
+    color: hsl(var(--t-text-dim));
+    flex-shrink: 0;
+  }
+
+  /* section dividers */
+  .term__divider {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    margin-block: var(--space-lg) var(--space-sm);
+    font-size: var(--fs-sm);
     font-weight: 500;
+    color: hsl(var(--t-text-muted));
+    letter-spacing: 0.02em;
   }
 
-  .bio__focus {
-    font-size: var(--fs-base);
-    color: hsl(var(--txt) / 0.8);
-    line-height: 1.65;
+  .term__divider-hash {
+    color: hsl(var(--t-text-dim));
+    font-weight: 700;
   }
 
-  .bio__focus-link {
-    color: hsl(var(--accent));
+  .term__divider::after,
+  .notes-aside__title::after {
+    content: "";
+    flex: 1;
+    border-top: 1px dashed;
+    margin-left: 0.5ch;
+    margin-top: 0.15em;
+  }
+
+  .term__divider::after {
+    border-top-color: hsl(var(--t-text-dim) / 0.6);
+  }
+
+  /* brew install lines */
+  .term__line {
+    display: flex;
+    gap: 0.7ch;
+    font-size: var(--fs-sm);
+    color: hsl(var(--t-text-muted));
+  }
+
+  .term__marker {
+    color: hsl(var(--t-prompt));
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .term__install-result {
+    display: grid;
+    grid-template-areas: "slot";
+    min-height: 1.6em;
+    margin-top: var(--space-2xs);
+  }
+
+  .term__progress,
+  .term__success {
+    grid-area: slot;
+  }
+
+  .term__progress {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    color: hsl(var(--t-text-dim));
     font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    letter-spacing: -0.06em;
+    clip-path: inset(0 100% 0 0);
+    animation: term-progress 4s cubic-bezier(0.4, 0, 0.2, 1) var(--rd, 0ms)
+      forwards;
   }
 
-  .bio__focus-link:hover {
+  @keyframes term-progress {
+    0% {
+      clip-path: inset(0 100% 0 0);
+      opacity: 1;
+    }
+    75% {
+      clip-path: inset(0 0 0 0);
+      opacity: 1;
+    }
+    85% {
+      clip-path: inset(0 0 0 0);
+      opacity: 0;
+    }
+    100% {
+      clip-path: inset(0 0 0 0);
+      opacity: 0;
+    }
+  }
+
+  .term__success {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6ch;
+    padding: 0.15em 0;
     text-decoration: none;
+    color: hsl(var(--t-text));
+    font-size: var(--fs-sm);
+    width: fit-content;
+    opacity: 0;
+    pointer-events: none;
+    animation: term-success 4s linear var(--rd, 0ms) forwards;
   }
 
-  .bio__contact {
-    font-size: var(--fs-base);
-    color: hsl(var(--txt) / 0.7);
-    line-height: 1.65;
+  @keyframes term-success {
+    0%,
+    80% {
+      opacity: 0;
+      pointer-events: none;
+    }
+    95%,
+    100% {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .term__success-emoji {
+    font-size: 1.05em;
+    line-height: 1;
+  }
+
+  .term__success-name,
+  .term__mail-arg {
+    color: hsl(var(--t-accent));
+    background-image: linear-gradient(
+      hsl(var(--t-accent)),
+      hsl(var(--t-accent))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    transition: background-size var(--transition-ease-fast);
+  }
+
+  .term__success-name {
+    font-weight: 700;
+  }
+
+  .term__mail-arg {
+    font-weight: 600;
+  }
+
+  .term__success:hover .term__success-name,
+  .term__mail:hover .term__mail-arg {
+    background-size: 100% 2px;
+  }
+
+  .term__success-arrow {
+    color: hsl(var(--t-text-dim));
+    display: inline-block;
+    transition:
+      transform var(--transition-ease-fast),
+      color var(--transition-ease-fast);
+  }
+
+  .term__success:hover .term__success-arrow {
+    transform: translateX(3px);
+    color: hsl(var(--t-accent));
+  }
+
+  .term__success-path {
+    color: hsl(var(--t-text-muted));
+    transition: color var(--transition-ease-fast);
+  }
+
+  .term__success:hover .term__success-path {
+    color: hsl(var(--t-text));
+  }
+
+  /* mail CTA — active prompt */
+  .term__mail {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: 0.4em 0;
     margin-top: var(--space-sm);
+    width: fit-content;
   }
 
-  .bio__contact-link {
-    color: hsl(var(--accent));
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  /* active prompt cursor */
+  .term__cursor {
+    display: inline-block;
+    width: 0.62ch;
+    height: 1.6em;
+    background-color: hsl(var(--t-text));
+    vertical-align: -0.44em;
+    margin-left: 0.8ch;
+    animation: term-cursor-blink 1.05s step-end infinite;
   }
 
-  .bio__contact-link:hover {
-    text-decoration: none;
+  @keyframes term-cursor-blink {
+    50% {
+      opacity: 0;
+    }
   }
 
+  /* top-to-bottom reveal */
+  .term__reveal {
+    opacity: 0;
+    transform: translateY(4px);
+    animation: term-reveal 360ms ease-out var(--rd, 0ms) both;
+  }
+
+  @keyframes term-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (--sm) {
+    .term__name {
+      font-size: var(--fs-2xl);
+    }
+  }
+
+  /* notes sidebar — muted page chrome, recedes so terminal stays focus */
   .notes-aside {
-    border-top: 1px solid hsl(var(--txt) / 0.1);
-    padding-top: var(--space-lg);
+    font-size: var(--fs-sm);
   }
 
   .notes-aside__title {
-    display: inline-block;
-    font-size: var(--fs-md);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: hsl(var(--accent));
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: hsl(var(--txt) / 0.55);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    margin-bottom: var(--space-md);
+  }
+
+  .notes-aside__hash {
+    color: hsl(var(--txt) / 0.4);
     font-weight: 700;
-    margin-bottom: var(--space-lg);
-    padding-bottom: var(--space-2xs);
-    border-bottom: 2px solid hsl(var(--accent) / 0.4);
+  }
+
+  .notes-aside__title::after {
+    border-top-color: hsl(var(--txt) / 0.15);
   }
 
   .notes-aside__list {
@@ -135,49 +497,90 @@ const recentNotes = allNotes
     line-height: 1.5;
   }
 
-  .notes-aside__link {
-    font-size: var(--fs-md);
-    color: hsl(var(--txt) / 0.9);
+  .notes-aside__link,
+  .notes-aside__all {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1ch;
+    color: hsl(var(--txt) / 0.7);
     text-decoration: none;
+    transition: color var(--transition-ease-fast);
   }
 
-  .notes-aside__link:hover {
+  .notes-aside__link-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .notes-aside__chevron {
+    flex-shrink: 0;
+    width: 0.9em;
+    height: 0.9em;
+    color: hsl(var(--txt) / 0.35);
+    transition:
+      transform var(--transition-ease-fast),
+      color var(--transition-ease-fast);
+  }
+
+  .notes-aside__link:hover,
+  .notes-aside__all:hover {
     color: hsl(var(--accent));
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  }
+
+  .notes-aside__link:hover .notes-aside__chevron,
+  .notes-aside__all:hover .notes-aside__chevron {
+    transform: translateX(2px);
+    color: hsl(var(--accent));
   }
 
   .notes-aside__all {
-    display: inline-block;
     margin-top: var(--space-md);
-    font-size: var(--fs-sm);
-    color: hsl(var(--accent));
-    text-decoration: none;
+    color: hsl(var(--txt) / 0.55);
   }
 
-  .notes-aside__all:hover {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  @media (min-width: 900px) {
-    .home {
-      grid-template-columns: minmax(0, 1fr) 18rem;
-      gap: var(--space-3xl, 4rem);
-      align-items: start;
-    }
-
-    .bio__intro {
-      font-size: var(--fs-xl);
-    }
-
+  @media (--md) {
     .notes-aside {
-      border-top: none;
-      padding-top: 0;
-      border-left: 1px solid hsl(var(--txt) / 0.1);
-      padding-left: var(--space-xl);
       position: sticky;
-      top: var(--space-xl);
+      top: var(--space-md);
+    }
+  }
+
+  /* skip reveal animations on revisit — but keep the cursor blinking */
+  :global(.term-seen) .term__reveal {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  :global(.term-seen) .term__progress {
+    display: none;
+  }
+
+  :global(.term-seen) .term__success {
+    opacity: 1;
+    pointer-events: auto;
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .term__reveal,
+    .term__cursor {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+
+    .term__progress {
+      display: none;
+    }
+
+    .term__success {
+      opacity: 1;
+      pointer-events: auto;
+      animation: none;
     }
   }
 </style>
