@@ -14,26 +14,7 @@ export const bio = {
   },
   sections: {
     shipping: "what I'm shipping",
-    alsoShipped: "also shipped",
   },
   notesAsideTitle: "recent notes",
   notesAllLabel: "all notes",
 };
-
-export const selectedWork = [
-  {
-    slug: "sheet-happens",
-    url: "https://sh.xaaha.dev",
-    blurb: "TanStack · Amazon Ads bulk launch sheets",
-  },
-  {
-    slug: "address-api",
-    url: "https://github.com/xaaha/address-api",
-    blurb: "Go · GraphQL · 20k real-world addresses by country",
-  },
-  {
-    slug: "tldrnotes",
-    url: "https://github.com/xaaha/tldrnotes",
-    blurb: "Astro · this site",
-  },
-];

@@ -1,7 +1,7 @@
 ---
-const { title, description, image = "/og-image.png" } = Astro.props;
+const { title, description, image } = Astro.props;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
-const imageUrl = new URL(image, Astro.site).href;
+const imageUrl = image ? new URL(image, Astro.site).href : undefined;
 ---
 
 <head>
@@ -24,14 +24,17 @@ const imageUrl = new URL(image, Astro.site).href;
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={imageUrl} />
+  {imageUrl && <meta property="og:image" content={imageUrl} />}
 
   <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta
+    name="twitter:card"
+    content={imageUrl ? "summary_large_image" : "summary"}
+  />
   <meta name="twitter:url" content={canonicalUrl} />
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={imageUrl} />
+  {imageUrl && <meta name="twitter:image" content={imageUrl} />}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link

@@ -172,7 +172,6 @@ const recentNotes = allNotes
   /* terminal body */
   .term__body {
     padding: var(--space-md);
-    font-family: "IBM Plex Mono", monospace;
     line-height: 1.6;
   }
 
@@ -259,13 +258,17 @@ const recentNotes = allNotes
     font-weight: 700;
   }
 
-  .term__divider::after {
+  .term__divider::after,
+  .notes-aside__title::after {
     content: "";
     flex: 1;
-    border-top: 1px dashed hsl(var(--t-text-dim) / 0.6);
-    align-self: center;
+    border-top: 1px dashed;
     margin-left: 0.5ch;
     margin-top: 0.15em;
+  }
+
+  .term__divider::after {
+    border-top-color: hsl(var(--t-text-dim) / 0.6);
   }
 
   /* brew install lines */
@@ -360,9 +363,9 @@ const recentNotes = allNotes
     line-height: 1;
   }
 
-  .term__success-name {
+  .term__success-name,
+  .term__mail-arg {
     color: hsl(var(--t-accent));
-    font-weight: 700;
     background-image: linear-gradient(
       hsl(var(--t-accent)),
       hsl(var(--t-accent))
@@ -373,7 +376,16 @@ const recentNotes = allNotes
     transition: background-size var(--transition-ease-fast);
   }
 
-  .term__success:hover .term__success-name {
+  .term__success-name {
+    font-weight: 700;
+  }
+
+  .term__mail-arg {
+    font-weight: 600;
+  }
+
+  .term__success:hover .term__success-name,
+  .term__mail:hover .term__mail-arg {
     background-size: 100% 2px;
   }
 
@@ -407,23 +419,6 @@ const recentNotes = allNotes
     padding: 0.4em 0;
     margin-top: var(--space-sm);
     width: fit-content;
-  }
-
-  .term__mail-arg {
-    color: hsl(var(--t-accent));
-    font-weight: 600;
-    background-image: linear-gradient(
-      hsl(var(--t-accent)),
-      hsl(var(--t-accent))
-    );
-    background-repeat: no-repeat;
-    background-size: 100% 1px;
-    background-position: 0 100%;
-    transition: background-size var(--transition-ease-fast);
-  }
-
-  .term__mail:hover .term__mail-arg {
-    background-size: 100% 2px;
   }
 
   /* active prompt cursor */
@@ -465,7 +460,6 @@ const recentNotes = allNotes
 
   /* notes sidebar — muted page chrome, recedes so terminal stays focus */
   .notes-aside {
-    font-family: "IBM Plex Mono", monospace;
     font-size: var(--fs-sm);
   }
 
@@ -487,11 +481,7 @@ const recentNotes = allNotes
   }
 
   .notes-aside__title::after {
-    content: "";
-    flex: 1;
-    border-top: 1px dashed hsl(var(--txt) / 0.15);
-    margin-left: 0.5ch;
-    margin-top: 0.15em;
+    border-top-color: hsl(var(--txt) / 0.15);
   }
 
   .notes-aside__list {
