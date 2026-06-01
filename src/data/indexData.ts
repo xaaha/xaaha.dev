@@ -5,7 +5,7 @@ export const linkedin = "https://www.linkedin.com/in/pthapa1";
 export const bio = {
   title: "xaaha | Software Engineer",
   name: "xaaha",
-  role: "Five years of CLI obsession. Hand-rolled software and developer tools.",
+  role: "Building software that's fast, reliable, and pleasure to use",
   mailArg: "let's-work-together",
   focusProject: {
     name: "Hulak",
